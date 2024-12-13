@@ -1,6 +1,5 @@
 // pages/BookListPage.js
 import React, { useState, useEffect } from 'react';
-import BookCard from '../components/BookCard';
 
 const BookListPage = ({ onBookSelect }) => {
   const [books, setBooks] = useState([]);

@@ -66,7 +66,7 @@ const BookFilterPage = ({ onBookSelect }) => {
     updateFilterOptions(books, filterType);
     setFilterValue('');
     setFilteredBooks([]);
-  }, [filterType, books]);
+  }, [filterType, books]); // filterType 추가
 
   const updateFilterOptions = (books, type) => {
     if (!books.length) return;
