@@ -1,8 +1,6 @@
-// BookflixMain.js
+// components/BookflixMain.js
 import React, { useState, useEffect } from 'react';
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import SearchResultsModal from './SearchResultsModal';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const BookCarousel = ({ title, books, onBookSelect }) => {
   const [startIdx, setStartIdx] = useState(0);
@@ -60,9 +58,6 @@ const BookCarousel = ({ title, books, onBookSelect }) => {
 const BookflixMain = ({ onBookSelect }) => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -81,94 +76,34 @@ const BookflixMain = ({ onBookSelect }) => {
     fetchBooks();
   }, []);
 
+  // 다양한 책 목록 생성
   const popularBooks = books.slice(0, 10);
   const newBooks = books.filter(book => book.PUBLCATN_YY >= "2023");
+  const recommendedBooks = books.slice(10, 20);
+  
+  // 주요 출판사 책들
+  const majorPublisherBooks = books.filter(book => 
+    ["문학동네", "창비", "민음사", "위즈덤하우스"].includes(book.PUBLSHCMPY_NM)
+  ).slice(0, 10);
+  
+  // 베스트셀러 (임의의 기준으로 선정)
+  const bestsellerBooks = books.slice(5, 15);
 
-  const handleSearchKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
-
-  const handleSearch = () => {
-    if (searchQuery.trim() === '') return;
-    const filtered = books.filter(book => 
-      book.BOOK_NM_INFO && book.BOOK_NM_INFO.toLowerCase().includes(searchQuery.toLowerCase())
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{height:'30rem'}}>
+        <div className="fs-4 text-white">로딩 중...</div>
+      </div>
     );
-    setSearchResults(filtered);
-  };
-
-  const handleCloseSearchModal = () => {
-    setSearchResults(null);
-    setSearchQuery('');
-  };
+  }
 
   return (
-    <div className="min-h-screen text-white" style={{backgroundColor:'#000'}}>
-      <style>
-        {`
-          .custom-placeholder::placeholder {
-            color: #ccc;
-          }
-        `}
-      </style>
-
-      {/* Header */}
-      <header className="fixed-top" style={{backgroundColor:"#000"}}>
-        <div className="container d-flex align-items-center justify-content-between py-3">
-          <h1 className="m-0 fw-bold" style={{fontSize:'2rem', color:'#e50914'}}>Bookflix</h1>
-          <div className="d-flex align-items-center gap-4">
-            <div className="input-group" style={{maxWidth:'300px'}}>
-              <input 
-                type="text" 
-                placeholder="책 검색..."
-                className="form-control bg-transparent text-white border border-secondary custom-placeholder"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleSearchKeyDown}
-              />
-              <span className="input-group-text bg-transparent border border-secondary" onClick={handleSearch} style={{cursor:'pointer'}}>
-                <Search className="text-white" />
-              </span>
-            </div>
-            {/* My library 버튼 */}
-            <button 
-              className="btn p-0" 
-              style={{border:'none', background:'none', color:'#fff', fontSize:'1.25rem'}} 
-              onClick={() => navigate('/library')}
-            >
-              My library
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container px-4" style={{ paddingTop:'5rem'}}>
-        {loading ? (
-          <div className="d-flex justify-content-center align-items-center" style={{height:'30rem'}}>
-            <div className="fs-4">로딩 중...</div>
-          </div>
-        ) : (
-          <>
-            <BookCarousel title="인기 도서" books={popularBooks} onBookSelect={onBookSelect} />
-            <BookCarousel title="신간 도서" books={newBooks} onBookSelect={onBookSelect} />
-            <BookCarousel title="추천 도서" books={books.slice(10, 20)} onBookSelect={onBookSelect} />
-          </>
-        )}
-      </main>
-
-      {/* Footer */}
-      <footer className="mt-5 py-4 border-top border-secondary">
-        <div className="container text-center text-secondary">
-          <p className="m-0">&copy; 2024 Bookflix. All rights reserved.</p>
-        </div>
-      </footer>
-
-      {/* 검색 결과 모달 */}
-      {searchResults && searchResults.length > 0 && (
-        <SearchResultsModal results={searchResults} onClose={handleCloseSearchModal} />
-      )}
+    <div className="container px-4">
+      <BookCarousel title="인기 도서" books={popularBooks} onBookSelect={onBookSelect} />
+      <BookCarousel title="신간 도서" books={newBooks} onBookSelect={onBookSelect} />
+      <BookCarousel title="추천 도서" books={recommendedBooks} onBookSelect={onBookSelect} />
+      <BookCarousel title="주요 출판사 도서" books={majorPublisherBooks} onBookSelect={onBookSelect} />
+      <BookCarousel title="베스트셀러" books={bestsellerBooks} onBookSelect={onBookSelect} />
     </div>
   );
 };

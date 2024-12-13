@@ -1,21 +1,28 @@
-// BookDetailModal.js
-import React from 'react';
+// components/BookDetailModal.js
+import React, { useEffect } from 'react';
 
 const BookDetailModal = ({ book, onClose, similarBooks }) => {
+  useEffect(() => {
+    // 모달이 열릴 때 body의 스크롤 막기
+    document.body.style.overflow = 'hidden';
+    
+    // 모달이 닫힐 때 스크롤 복원
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
+
   if (!book) return null;
 
   return (
     <>
-      {/* 배경 오버레이 */}
       <div className="modal-backdrop show" style={{ backgroundColor: 'rgba(0,0,0,0.8)' }}></div>
-
-      <div className="modal show fade" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
+      <div className="modal show d-block" tabIndex="-1" role="dialog">
         <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
           <div className="modal-content bg-dark text-white p-4">
             <div className="modal-header border-0">
               <h5 className="modal-title fs-1 fw-bold">{book.BOOK_NM_INFO}</h5>
             </div>
-            {/* gap 크기를 늘리고, 오른쪽 칸에 여유공간 추가 */}
             <div className="modal-body d-flex" style={{gap: '3rem', minHeight:'300px'}}>
               <div className="flex-shrink-0" style={{flex:'0 0 40%'}}>
                 <img 
@@ -39,7 +46,14 @@ const BookDetailModal = ({ book, onClose, similarBooks }) => {
               </div>
             </div>
             <div className="modal-footer border-0">
-              <button type="button" className="btn btn-secondary fs-5" style={{color:'#e50914', backgroundColor:'#000', border:'none'}} onClick={onClose}>닫기</button>
+              <button 
+                type="button" 
+                className="btn btn-secondary fs-5" 
+                style={{color:'#e50914', backgroundColor:'#000', border:'none'}} 
+                onClick={onClose}
+              >
+                닫기
+              </button>
             </div>
           </div>
         </div>
